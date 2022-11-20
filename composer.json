@@ -1,0 +1,32 @@
+{
+    "name": "bengr/routing",
+    "description": "Package for implementing multiple solutions for routing in laravel application (regular routing, controller discovery, view discovery...)",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "matejkrenek",
+            "email": "mate23.krenek@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Bengr\\Routing\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Bengr\\Routing\\RoutingServiceProvider"
+            ],
+            "aliases": {
+                "Routing": "Bengr\\Routing\\Facades\\Routing"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "orchestra/testbench": "^7.13"
+    }
+}
