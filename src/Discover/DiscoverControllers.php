@@ -10,6 +10,12 @@ class DiscoverControllers
 
     protected string $rootNamespace;
 
+    protected $path;
+
+    protected $transformers;
+
+    protected $middleware;
+
     public function __construct($path, $transformers, $middleware)
     {
         $this->rootNamespace = '';
