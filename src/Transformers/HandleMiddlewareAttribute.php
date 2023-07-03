@@ -11,9 +11,11 @@ class HandleMiddlewareAttribute implements Transformer
 
     public function transform(Collection $routes): Collection
     {
+
         return $routes->each(function (PendingRoute $route) {
             $route->actions->each(function (PendingRouteAction $action) use ($route) {
                 if ($pendingRouteAttribute = $route->getRouteAttribute()) {
+
                     $action->addMiddleware($pendingRouteAttribute->middleware);
                 }
 

@@ -13,11 +13,13 @@ class RoutingServiceProvider extends ServiceProvider
 
         if ($this->routesAreCached()) return;
 
-        $this->app->singleton('routing', function ($app) {
-            return new Routing($app->router);
+        $this->app->singleton(RoutingManager::class, function ($app) {
+            return new RoutingManager($app->router);
         });
 
-        app('routing')->configure();
+        if ($this->app->environment() !== 'testing') {
+            $this->app->make(RoutingManager::class)->registerRoutes();
+        }
     }
 
     public function routesAreCached()

@@ -34,6 +34,7 @@ class Route implements Attribute
             ->filter(fn (string $method) => in_array($method, Router::$verbs))
             ->toArray();
 
+
         $this->middleware = Arr::wrap($middleware);
     }
 }

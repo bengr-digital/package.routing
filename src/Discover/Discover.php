@@ -4,17 +4,10 @@ namespace Bengr\Routing\Discover;
 
 class Discover
 {
-    public static function register($config)
+    public static function register(array $paths = [], array $middleware = [], array $transformers = [])
     {
-        if (array_key_exists('controllers', $config)) {
-            self::controllers($config['controllers']);
-        }
-    }
-
-    public static function controllers($config)
-    {
-        collect($config['paths'])->each(function (string $path) use ($config) {
-            new DiscoverControllers($path, $config['transformers'], $config['middleware']);
+        collect($paths)->each(function (string $path) use ($middleware, $transformers) {
+            new DiscoverControllers($path, $transformers, $middleware);
         });
     }
 }
