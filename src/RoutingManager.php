@@ -92,15 +92,17 @@ class RoutingManager
 
     public function getRegistrars(): array
     {
-        $registrars = is_array(config('routing.default')) ? config('routing.default') : array(config('routing.default'));
+        $registrarNames = is_array(config('routing.default')) ? config('routing.default') : array(config('routing.default'));
+        $registrars = [];
 
-        foreach ($registrars as $registrar) {
-            if (!key_exists($registrar, config('routing.registrars'))) {
-                throw new \Exception("registrar `{$registrar}` does not exist inside of `routing.registrars`");
+        foreach ($registrarNames as $registrarName) {
+            if (!key_exists($registrarName, config('routing.registrars'))) {
+                throw new \Exception("registrar `{$registrarName}` does not exist inside of `routing.registrars`");
             }
+            $registrars[$registrarName] = config('routing.registrars')[$registrarName];
         }
 
-        return config('routing.registrars');
+        return $registrars;
     }
 
     public function getRouter(): Router
