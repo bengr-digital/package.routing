@@ -1,6 +1,6 @@
 <?php
 
-namespace Bengr\Routing\PendingRoutes;
+namespace Bengr\Routing\Registrars\Livewire\PendingRoutes;
 
 use Illuminate\Support\Str;
 
@@ -19,26 +19,18 @@ class PendingRouteFactory
 
         $class = new \ReflectionClass($fullyQualifiedClassName);
 
-        if ($class->isAbstract()) return null;
-
-        $actions = collect($class->getMethods())
-            ->filter(function (\ReflectionMethod $method) {
-                return $method->isPublic();
-            })
-            ->map(function (\ReflectionMethod $method) use ($fullyQualifiedClassName) {
-                return new PendingRouteAction($method, $fullyQualifiedClassName, $this->middlewares);
-            });
+        if ($class->isAbstract() || !$class->isSubclassOf(\Livewire\Component::class)) return null;
 
         $uri = $this->discoverUri($class);
 
-        return new PendingRoute($fileInfo, $class, $uri, $fullyQualifiedClassName, $actions);
+        return new PendingRoute($fileInfo, $class, $uri, $fullyQualifiedClassName, is_array($this->middlewares) ? $this->middlewares : array($this->middlewares));
     }
 
     protected function discoverUri(\ReflectionClass $class): string
     {
         $parts = Str::of($class->getFileName())
             ->after(str_replace('/', DIRECTORY_SEPARATOR, $this->registeringPath))
-            ->beforeLast('Controller')
+            ->beforeLast('.php')
             ->explode(DIRECTORY_SEPARATOR);
 
         return collect($parts)
@@ -47,7 +39,7 @@ class PendingRouteFactory
             ->reject(function (string $part) {
                 return strtolower($part) === 'index';
             })
-            ->map(fn (string $part) => Str::of($part)->kebab() . 's')
+            ->map(fn (string $part) => Str::of($part)->kebab())
             ->implode('/');
     }
 

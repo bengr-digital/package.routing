@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'default' => 'discover',
+    'default' => 'livewire',
 
     /*  
     |--------------------------------------------------------------------------
@@ -44,6 +44,20 @@ return [
                 Bengr\Routing\Transformers\HandleWheresAttribute::class,
                 Bengr\Routing\Transformers\AddDefaultRouteName::class,
                 Bengr\Routing\Transformers\HandleDomainAttribute::class,
+            ]
+        ],
+        'livewire' => [
+            'driver' => 'livewire',
+            'paths' => [
+                app_path('Http/Livewire')
+            ],
+            'middleware' => ['web'],
+            'transformers' => [
+                Bengr\Routing\Registrars\Livewire\Transformers\HandleNoDiscoverAttribute::class,
+                Bengr\Routing\Registrars\Livewire\Transformers\HandleUriAttribute::class,
+                Bengr\Routing\Registrars\Livewire\Transformers\HandleRouteNameAttribute::class,
+                Bengr\Routing\Registrars\Livewire\Transformers\HandleMiddlewareAttribute::class,
+                Bengr\Routing\Registrars\Livewire\Transformers\HandleHttpMethodsAttribute::class,
             ]
         ],
         'base' => [

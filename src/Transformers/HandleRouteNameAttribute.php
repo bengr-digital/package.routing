@@ -8,7 +8,6 @@ use Illuminate\Support\Collection;
 
 class HandleRouteNameAttribute implements Transformer
 {
-
     public function transform(Collection $routes): Collection
     {
         return $routes->each(function (PendingRoute $route) {

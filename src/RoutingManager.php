@@ -4,6 +4,7 @@ namespace Bengr\Routing;
 
 use Bengr\Routing\Base\Base;
 use Bengr\Routing\Discover\Discover;
+use Bengr\Routing\Registrars\Livewire\LivewireRegistrar;
 use Illuminate\Routing\Router;
 
 class RoutingManager
@@ -89,15 +90,17 @@ class RoutingManager
         return $this->rootNamespace;
     }
 
-    public function getRegistrar(): array
+    public function getRegistrars(): array
     {
-        $registrarName = $this->registrar ?? config('routing.default');
+        $registrars = is_array(config('routing.default')) ? config('routing.default') : array(config('routing.default'));
 
-        if (!key_exists($registrarName, config('routing.registrars'))) {
-            throw new \Exception("registrar `{$registrarName}` does not exist inside of `routing.registrars`");
+        foreach ($registrars as $registrar) {
+            if (!key_exists($registrar, config('routing.registrars'))) {
+                throw new \Exception("registrar `{$registrar}` does not exist inside of `routing.registrars`");
+            }
         }
 
-        return config('routing.registrars')[$registrarName];
+        return config('routing.registrars');
     }
 
     public function getRouter(): Router
@@ -105,37 +108,42 @@ class RoutingManager
         return $this->router;
     }
 
-    public function getDiscoverPaths(): array
+    public function getDiscoverPaths(array $registrar): array
     {
-        return count($this->discoverPaths) ? $this->discoverPaths : $this->getRegistrar()['paths'];
+        return count($this->discoverPaths) ? $this->discoverPaths : $registrar['paths'];
     }
 
-    public function getDiscoverMiddleware(): array
+    public function getDiscoverMiddleware(array $registrar): array
     {
-        return count($this->discoverMiddleware) ? $this->discoverMiddleware : $this->getRegistrar()['middleware'];
+        return count($this->discoverMiddleware) ? $this->discoverMiddleware : $registrar['middleware'];
     }
 
-    public function getDiscoverTransformers(): array
+    public function getDiscoverTransformers(array $registrar): array
     {
-        return count($this->discoverTransformers) ? $this->discoverTransformers : $this->getRegistrar()['transformers'];
+        return count($this->discoverTransformers) ? $this->discoverTransformers : $registrar['transformers'];
     }
 
-    public function getBaseGroups(): array
+    public function getBaseGroups(array $registrar): array
     {
-        return count($this->baseGroups) ? $this->baseGroups : $this->getRegistrar()['groups'];
+        return count($this->baseGroups) ? $this->baseGroups : $registrar['groups'];
     }
 
     public function registerRoutes()
     {
-        switch ($this->getRegistrar()['driver']) {
-            case 'discover':
-                Discover::register($this->getDiscoverPaths(), $this->getDiscoverMiddleware(), $this->getDiscoverTransformers());
-                break;
-            case 'base':
-                Base::register($this->getBaseGroups());
-                break;
-            default:
-                return;
+        foreach ($this->getRegistrars() as $registrar) {
+            switch ($registrar['driver']) {
+                case 'discover':
+                    Discover::register($this->getDiscoverPaths($registrar), $this->getDiscoverMiddleware($registrar), $this->getDiscoverTransformers($registrar));
+                    break;
+                case 'base':
+                    Base::register($this->getBaseGroups($registrar));
+                    break;
+                case 'livewire':
+                    LivewireRegistrar::make($registrar);
+                    break;
+                default:
+                    return;
+            }
         }
     }
 }

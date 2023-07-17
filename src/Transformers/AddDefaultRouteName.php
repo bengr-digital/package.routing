@@ -11,6 +11,7 @@ class AddDefaultRouteName implements Transformer
 
     public function transform(Collection $routes): Collection
     {
+
         return $routes->each(function (PendingRoute $route) {
             $route->actions
                 ->reject(fn (PendingRouteAction $action) => $action->name)
